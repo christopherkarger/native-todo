@@ -3,6 +3,7 @@ import { Dimensions, StyleSheet } from "react-native";
 export const listStyles: StyleSheet.NamedStyles<any> = {
   viewWrapper: {
     marginLeft: 20,
+    marginRight: 20,
   },
   header: {
     fontFamily: "roboto-black",
@@ -24,10 +25,24 @@ export const listStyles: StyleSheet.NamedStyles<any> = {
     alignSelf: "flex-start",
     borderRadius: 8,
     alignItems: "center",
+    marginBottom: 20,
   },
   addButtonText: {
     color: "#ffffff",
     fontFamily: "roboto-regular",
     fontSize: 18,
+  },
+};
+
+export const listItemStyles: StyleSheet.NamedStyles<any> = {
+  itemWrapper: {
+    padding: 5,
+    flexDirection: "row",
+  },
+  checkButton: {
+    marginRight: 10,
+  },
+  deleteButton: {
+    marginLeft: "auto",
   },
 };

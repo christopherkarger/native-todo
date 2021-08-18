@@ -1,14 +1,15 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
-  StyleSheet,
   FlatList,
   SafeAreaView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
 } from "react-native";
 import firebase from "../../firebase";
+import ListItem from "./list-item";
 import { listStyles } from "./styles";
 
 interface IListItem {
@@ -21,44 +22,75 @@ const List = () => {
   const [allItems, setAllItems] = useState<IListItem[]>([]);
   const firebaseList = firebase.database().ref("/");
 
-  const saveToList = (list?: IListItem[]) => {
-    if (list) {
+  const deleteItem = useCallback(
+    (index: number) => {
+      const listCopy = [...allItems];
+      updateList(
+        listCopy.filter((_, i) => i !== index),
+        true
+      );
+    },
+    [allItems]
+  );
+
+  const toggleItem = useCallback(
+    (index: number) => {
+      const listCopy = [...allItems];
+      const orgItem = listCopy[index];
+      const listItem = {
+        checked: !orgItem.checked,
+        value: orgItem.value,
+      };
+
+      listCopy[index] = listItem;
+      updateList(listCopy, true);
+    },
+    [allItems]
+  );
+
+  const updateList = useCallback(
+    (list: IListItem[], updateListOnServer?: boolean) => {
       setAllItems(list);
+      if (updateListOnServer) {
+        firebaseList.set(list);
+      }
+    },
+    [allItems]
+  );
+
+  const addToList = useCallback(() => {
+    if (!enteredItem) {
       return;
     }
-
-    if (enteredItem) {
+    setAllItems((all) => {
       const item = {
         checked: false,
         value: enteredItem,
       };
-
-      setAllItems((all) => {
-        const updatedList = all.length > 0 ? [...all, item] : [item];
-        firebaseList.set(updatedList);
-        return updatedList;
-      });
-    }
-  };
+      const updatedList = all.length > 0 ? [...all, item] : [item];
+      firebaseList.set(updatedList);
+      return updatedList;
+    });
+  }, [enteredItem]);
 
   useEffect(() => {
     firebaseList.on("value", (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        saveToList(data);
+        updateList(data);
       } else {
-        saveToList([]);
+        updateList([]);
       }
     });
   }, []);
 
-  const addItem = () => {
+  const addItem = useCallback(() => {
     if (enteredItem.length === 0) {
       return;
     }
-    saveToList();
+    addToList();
     setEnteredItem("");
-  };
+  }, [enteredItem]);
 
   return (
     <SafeAreaView style={styles.viewWrapper}>
@@ -73,10 +105,17 @@ const List = () => {
         <Text style={styles.addButtonText}>Hinzufügen</Text>
       </TouchableOpacity>
       <FlatList
+        keyboardShouldPersistTaps="handled"
         data={allItems}
-        keyExtractor={(itemData) => Math.random().toString(36) + itemData.value}
-        renderItem={(itemData) => {
-          return <Text>{itemData.item.value}</Text>;
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={({ item, index }) => {
+          return (
+            <ListItem
+              item={item}
+              toggleItem={() => toggleItem(index)}
+              deleteItem={() => deleteItem(index)}
+            ></ListItem>
+          );
         }}
       ></FlatList>
       <StatusBar style="auto" />
