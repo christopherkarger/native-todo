@@ -102,6 +102,7 @@ const List = () => {
           placeholder="Produkt"
           value={enteredItem}
           style={styles.textInput}
+          onSubmitEditing={addItem}
           onChangeText={setEnteredItem}
         />
         <TouchableOpacity onPress={addItem} style={styles.addButton}>

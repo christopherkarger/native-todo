@@ -1,4 +1,5 @@
 import { Dimensions, StyleSheet } from "react-native";
+import { isAndroid } from "../helpers/platform";
 
 export const listStyles: StyleSheet.NamedStyles<any> = {
   viewWrapper: {
@@ -8,7 +9,7 @@ export const listStyles: StyleSheet.NamedStyles<any> = {
   header: {
     fontFamily: "roboto-black",
     fontSize: 45,
-    marginTop: 10,
+    marginTop: isAndroid ? 40 : 10,
     marginBottom: 30,
   },
   textInput: {
@@ -39,6 +40,7 @@ export const listItemStyles: StyleSheet.NamedStyles<any> = {
     paddingVertical: 15,
     paddingHorizontal: 20,
     flexDirection: "row",
+    alignItems: "center",
   },
   checkButton: {
     marginRight: 10,
@@ -47,6 +49,6 @@ export const listItemStyles: StyleSheet.NamedStyles<any> = {
     marginLeft: "auto",
   },
   even: {
-    backgroundColor: "#c7d1dc",
+    backgroundColor: "#cae6fa",
   },
 };
