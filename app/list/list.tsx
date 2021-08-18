@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
 import firebase from "../../firebase";
 import ListItem from "./list-item";
@@ -93,17 +94,20 @@ const List = () => {
   }, [enteredItem]);
 
   return (
-    <SafeAreaView style={styles.viewWrapper}>
-      <Text style={styles.header}>Einkaufen</Text>
-      <TextInput
-        placeholder="Produkt"
-        value={enteredItem}
-        style={styles.textInput}
-        onChangeText={setEnteredItem}
-      />
-      <TouchableOpacity onPress={addItem} style={styles.addButton}>
-        <Text style={styles.addButtonText}>Hinzufügen</Text>
-      </TouchableOpacity>
+    <SafeAreaView>
+      <View style={styles.viewWrapper}>
+        <Text style={styles.header}>Einkaufen</Text>
+        <TextInput
+          keyboardAppearance="dark"
+          placeholder="Produkt"
+          value={enteredItem}
+          style={styles.textInput}
+          onChangeText={setEnteredItem}
+        />
+        <TouchableOpacity onPress={addItem} style={styles.addButton}>
+          <Text style={styles.addButtonText}>Hinzufügen</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         keyboardShouldPersistTaps="handled"
         data={allItems}
@@ -112,6 +116,7 @@ const List = () => {
           return (
             <ListItem
               item={item}
+              isEven={index % 2}
               toggleItem={() => toggleItem(index)}
               deleteItem={() => deleteItem(index)}
             ></ListItem>

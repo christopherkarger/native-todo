@@ -4,7 +4,13 @@ import { listItemStyles } from "./styles";
 
 const ListItem = (props: any) => {
   return (
-    <View style={styles.itemWrapper}>
+    <View
+      style={
+        props.isEven
+          ? { ...styles.itemWrapper }
+          : { ...styles.itemWrapper, ...styles.even }
+      }
+    >
       <TouchableOpacity
         onPress={() => props.toggleItem()}
         style={styles.checkButton}
