@@ -40,13 +40,13 @@ const List = () => {
       const result = await getLocalTableBD();
       //@ts-ignore
       const arr = result.rows._array as IListItemDB[];
-
       updateList(
         arr.map((a) => ({
           checked: a.checked === 1,
           value: a.value,
         }))
       );
+      setUpdating(false);
 
       firebaseList.on("value", (snapshot) => {
         const data = snapshot.val();
@@ -56,8 +56,6 @@ const List = () => {
           updateList([]);
         }
       });
-
-      setUpdating(false);
     })();
   }, []);
 
