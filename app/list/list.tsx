@@ -113,7 +113,7 @@ const List = () => {
         setAllItems(list);
         await saveLocalListToDB(list);
         if (updateListOnServer) {
-          firebaseList.set(list);
+          await firebaseList.set(list);
         }
         setUpdating(false);
       })();
