@@ -10,80 +10,138 @@ import {
   View,
 } from "react-native";
 import firebase from "../../firebase";
+import { getLocalTableBD, saveLocalListToDB } from "../helpers/db";
 import ListItem from "./list-item";
 import { listStyles } from "./styles";
 
-interface IListItem {
+export interface IListItem {
   checked: boolean;
   value: string;
 }
 
+export interface IListItemDB {
+  checked: number;
+  value: string;
+}
+
 const List = () => {
+  const [updating, setUpdating] = useState(false);
   const [enteredItem, setEnteredItem] = useState("");
   const [allItems, setAllItems] = useState<IListItem[]>([]);
   const firebaseList = firebase.database().ref("/");
 
+  useEffect(() => {
+    if (updating) {
+      return;
+    }
+
+    (async () => {
+      setUpdating(true);
+      const result = await getLocalTableBD();
+      //@ts-ignore
+      const arr = result.rows._array as IListItemDB[];
+
+      updateList(
+        arr.map((a) => ({
+          checked: a.checked === 1,
+          value: a.value,
+        }))
+      );
+
+      firebaseList.on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          updateList(data);
+        } else {
+          updateList([]);
+        }
+      });
+
+      setUpdating(false);
+    })();
+  }, []);
+
   const deleteItem = useCallback(
     (index: number) => {
-      const listCopy = [...allItems];
-      updateList(
-        listCopy.filter((_, i) => i !== index),
-        true
-      );
+      if (updating) {
+        return;
+      }
+
+      (async () => {
+        setUpdating(true);
+        const listCopy = [...allItems].filter((_, i) => i !== index);
+        await saveLocalListToDB(listCopy);
+        updateList(listCopy, true);
+        setUpdating(false);
+      })();
     },
-    [allItems]
+    [allItems, updating]
   );
 
   const toggleItem = useCallback(
     (index: number) => {
-      const listCopy = [...allItems];
-      const orgItem = listCopy[index];
-      const listItem = {
-        checked: !orgItem.checked,
-        value: orgItem.value,
-      };
+      if (updating) {
+        return;
+      }
 
-      listCopy[index] = listItem;
-      updateList(listCopy, true);
+      (async () => {
+        setUpdating(true);
+        const listCopy = [...allItems];
+        const orgItem = listCopy[index];
+        const listItem = {
+          checked: !orgItem.checked,
+          value: orgItem.value,
+        };
+
+        listCopy[index] = listItem;
+        await saveLocalListToDB(listCopy);
+        updateList(listCopy, true);
+        setUpdating(false);
+      })();
     },
-    [allItems]
+    [allItems, updating]
   );
 
   const updateList = useCallback(
     (list: IListItem[], updateListOnServer?: boolean) => {
-      setAllItems(list);
-      if (updateListOnServer) {
-        firebaseList.set(list);
+      if (updating) {
+        return;
       }
+
+      (async () => {
+        setUpdating(true);
+        setAllItems(list);
+        await saveLocalListToDB(list);
+        if (updateListOnServer) {
+          firebaseList.set(list);
+        }
+        setUpdating(false);
+      })();
     },
-    [allItems]
+    [allItems, updating]
   );
 
   const addToList = useCallback(() => {
-    if (!enteredItem) {
+    if (!enteredItem || updating) {
       return;
     }
+    setUpdating(true);
     setAllItems((all) => {
       const item = {
         checked: false,
         value: enteredItem,
       };
+
       const updatedList = all.length > 0 ? [...all, item] : [item];
-      firebaseList.set(updatedList);
+      (async () => {
+        await saveLocalListToDB(updatedList);
+        await firebaseList.set(updatedList);
+        setUpdating(false);
+      })();
+
       return updatedList;
     });
-  }, [enteredItem]);
-
-  useEffect(() => {
-    firebaseList.on("value", (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        updateList(data);
-      } else {
-        updateList([]);
-      }
-    });
-  }, []);
+  }, [enteredItem, updating]);
 
   const addItem = useCallback(() => {
     if (enteredItem.length === 0) {

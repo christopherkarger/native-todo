@@ -1,7 +1,10 @@
-import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
+import * as Font from "expo-font";
 import React, { useState } from "react";
+import { LogBox } from "react-native";
 import List from "./app/list/list";
+
+LogBox.ignoreLogs(["Setting a timer"]);
 
 const fetchFonts = () => {
   return Font.loadAsync({
