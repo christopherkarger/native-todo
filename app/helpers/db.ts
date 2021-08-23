@@ -18,7 +18,7 @@ export const saveLocalListToDB = async (list: IListItem[]) => {
 
   if (list.length > 0) {
     try {
-      insertListToLocalDB(list);
+      await insertListToLocalDB(list);
     } catch (err) {
       throw new Error("INSERT INTO TABLE FAILED");
     }
@@ -33,7 +33,7 @@ export const getLocalTableBD = () => {
   }
 };
 
-const createLocalDBTable = () => {
+export const createLocalDBTable = () => {
   return new Promise<SQLite.SQLResultSet>((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
