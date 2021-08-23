@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import firebase from "../../firebase";
+import DismissKeyboard from "../components/dismiss-keyboard";
 import { getLocalTableBD, saveLocalListToDB } from "../helpers/db";
 import ListItem from "./list-item";
 import { listStyles } from "./styles";
@@ -150,38 +151,40 @@ const List = () => {
   }, [enteredItem]);
 
   return (
-    <SafeAreaView>
-      <View style={styles.viewWrapper}>
-        <Text style={styles.header}>Einkaufen</Text>
-        <TextInput
-          keyboardAppearance="dark"
-          placeholder="Produkt"
-          value={enteredItem}
-          style={styles.textInput}
-          onSubmitEditing={addItem}
-          onChangeText={setEnteredItem}
-        />
-        <TouchableOpacity onPress={addItem} style={styles.addButton}>
-          <Text style={styles.addButtonText}>Hinzufügen</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        keyboardShouldPersistTaps="handled"
-        data={allItems}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item, index }) => {
-          return (
-            <ListItem
-              item={item}
-              isEven={index % 2}
-              toggleItem={() => toggleItem(index)}
-              deleteItem={() => deleteItem(index)}
-            ></ListItem>
-          );
-        }}
-      ></FlatList>
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <DismissKeyboard>
+      <SafeAreaView>
+        <View style={styles.viewWrapper}>
+          <Text style={styles.header}>Einkaufen</Text>
+          <TextInput
+            keyboardAppearance="dark"
+            placeholder="Produkt"
+            value={enteredItem}
+            style={styles.textInput}
+            onSubmitEditing={addItem}
+            onChangeText={setEnteredItem}
+          />
+          <TouchableOpacity onPress={addItem} style={styles.addButton}>
+            <Text style={styles.addButtonText}>Hinzufügen</Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          keyboardShouldPersistTaps="handled"
+          data={allItems}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item, index }) => {
+            return (
+              <ListItem
+                item={item}
+                isEven={index % 2}
+                toggleItem={() => toggleItem(index)}
+                deleteItem={() => deleteItem(index)}
+              ></ListItem>
+            );
+          }}
+        ></FlatList>
+        <StatusBar style="auto" />
+      </SafeAreaView>
+    </DismissKeyboard>
   );
 };
 
