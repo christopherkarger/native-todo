@@ -2,6 +2,9 @@ import { Dimensions, StyleSheet } from "react-native";
 import { isAndroid } from "../helpers/platform";
 
 export const listStyles: StyleSheet.NamedStyles<any> = {
+  safeArea: {
+    flex: 1,
+  },
   viewWrapper: {
     marginLeft: 20,
     marginRight: 20,
@@ -37,16 +40,18 @@ export const listStyles: StyleSheet.NamedStyles<any> = {
 
 export const listItemStyles: StyleSheet.NamedStyles<any> = {
   itemWrapper: {
-    paddingVertical: 15,
+    //paddingVertical: 15,
     paddingHorizontal: 20,
     flexDirection: "row",
     alignItems: "center",
   },
   checkButton: {
     marginRight: 10,
+    padding: 12,
   },
   deleteButton: {
     marginLeft: "auto",
+    padding: 12,
   },
   even: {
     backgroundColor: "#cae6fa",

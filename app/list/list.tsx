@@ -151,8 +151,9 @@ const List = () => {
   }, [enteredItem]);
 
   return (
-    <DismissKeyboard>
-      <SafeAreaView>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar style="dark" />
+      <DismissKeyboard>
         <View style={styles.viewWrapper}>
           <Text style={styles.header}>Einkaufen</Text>
           <TextInput
@@ -167,24 +168,24 @@ const List = () => {
             <Text style={styles.addButtonText}>Hinzufügen</Text>
           </TouchableOpacity>
         </View>
-        <FlatList
-          keyboardShouldPersistTaps="handled"
-          data={allItems}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item, index }) => {
-            return (
-              <ListItem
-                item={item}
-                isEven={index % 2}
-                toggleItem={() => toggleItem(index)}
-                deleteItem={() => deleteItem(index)}
-              ></ListItem>
-            );
-          }}
-        ></FlatList>
-        <StatusBar style="auto" />
-      </SafeAreaView>
-    </DismissKeyboard>
+      </DismissKeyboard>
+      <FlatList
+        keyboardShouldPersistTaps="handled"
+        data={allItems}
+        scrollEnabled={true}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={({ item, index }) => {
+          return (
+            <ListItem
+              item={item}
+              isEven={index % 2}
+              toggleItem={() => toggleItem(index)}
+              deleteItem={() => deleteItem(index)}
+            ></ListItem>
+          );
+        }}
+      ></FlatList>
+    </SafeAreaView>
   );
 };
 
