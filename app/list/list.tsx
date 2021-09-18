@@ -77,6 +77,33 @@ const List = () => {
     [allItems, updating]
   );
 
+  const updateItem = useCallback(
+    (itemValue: string, index: number) => {
+      if (updating) {
+        return;
+      }
+
+      (async () => {
+        setUpdating(true);
+
+        const listCopy = [...allItems].map((e, i) => {
+          if (i === index) {
+            return {
+              value: itemValue,
+              checked: e.checked,
+            };
+          }
+          return e;
+        });
+        await saveLocalListToDB(listCopy);
+        updateList(listCopy, true);
+
+        setUpdating(false);
+      })();
+    },
+    [allItems, updating]
+  );
+
   const toggleItem = useCallback(
     (index: number) => {
       if (updating) {
@@ -181,6 +208,7 @@ const List = () => {
               isEven={index % 2}
               toggleItem={() => toggleItem(index)}
               deleteItem={() => deleteItem(index)}
+              updateItem={(itemValue: string) => updateItem(itemValue, index)}
             ></ListItem>
           );
         }}

@@ -40,13 +40,11 @@ export const listStyles: StyleSheet.NamedStyles<any> = {
 
 export const listItemStyles: StyleSheet.NamedStyles<any> = {
   itemWrapper: {
-    //paddingVertical: 15,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     flexDirection: "row",
     alignItems: "center",
   },
   checkButton: {
-    marginRight: 10,
     padding: 12,
   },
   deleteButton: {
@@ -55,5 +53,15 @@ export const listItemStyles: StyleSheet.NamedStyles<any> = {
   },
   even: {
     backgroundColor: "#cae6fa",
+  },
+  itemTextInput: {
+    flex: 1,
+    paddingLeft: 10,
+    height: "100%",
+  },
+  itemText: {
+    flex: 1,
+    paddingLeft: 10,
+    height: 200,
   },
 };
