@@ -200,7 +200,7 @@ const List = () => {
         keyboardShouldPersistTaps="handled"
         data={allItems}
         scrollEnabled={true}
-        keyExtractor={(_, index) => index.toString()}
+        keyExtractor={(_, index) => Math.random().toString(36).substr(2, 5)}
         renderItem={({ item, index }) => {
           return (
             <ListItem
