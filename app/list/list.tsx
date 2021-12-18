@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import firebase from "../../firebase";
 import DismissKeyboard from "../components/dismiss-keyboard";
-import { getLocalTableBD, saveLocalListToDB } from "../helpers/db";
 import ListItem from "./list-item";
 import { listStyles } from "./styles";
 
@@ -37,24 +36,12 @@ const List = () => {
     }
 
     (async () => {
-      setUpdating(true);
-      const result = await getLocalTableBD();
-      //@ts-ignore
-      const arr = result.rows._array as IListItemDB[];
-      updateList(
-        arr.map((a) => ({
-          checked: a.checked === 1,
-          value: a.value,
-        }))
-      );
-      setUpdating(false);
-
       firebaseList.on("value", (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          updateList(data);
+          updateList(data, false);
         } else {
-          updateList([]);
+          updateList([], false);
         }
       });
     })();
@@ -69,8 +56,7 @@ const List = () => {
       (async () => {
         setUpdating(true);
         const listCopy = [...allItems].filter((_, i) => i !== index);
-        await saveLocalListToDB(listCopy);
-        updateList(listCopy, true);
+        updateList(listCopy);
         setUpdating(false);
       })();
     },
@@ -95,9 +81,7 @@ const List = () => {
           }
           return e;
         });
-        await saveLocalListToDB(listCopy);
-        updateList(listCopy, true);
-
+        updateList(listCopy);
         setUpdating(false);
       })();
     },
@@ -120,8 +104,7 @@ const List = () => {
         };
 
         listCopy[index] = listItem;
-        await saveLocalListToDB(listCopy);
-        updateList(listCopy, true);
+        updateList(listCopy);
         setUpdating(false);
       })();
     },
@@ -129,7 +112,7 @@ const List = () => {
   );
 
   const updateList = useCallback(
-    (list: IListItem[], updateListOnServer?: boolean) => {
+    (list: IListItem[], updateListOnServer = true) => {
       if (updating) {
         return;
       }
@@ -137,7 +120,6 @@ const List = () => {
       (async () => {
         setUpdating(true);
         setAllItems(list);
-        await saveLocalListToDB(list);
         if (updateListOnServer) {
           await firebaseList.set(list);
         }
@@ -160,7 +142,6 @@ const List = () => {
 
       const updatedList = all.length > 0 ? [...all, item] : [item];
       (async () => {
-        await saveLocalListToDB(updatedList);
         await firebaseList.set(updatedList);
         setUpdating(false);
       })();
